@@ -2,29 +2,35 @@
 var $window = $(window), gardenCtx, gardenCanvas, $garden, garden;
 var clientWidth = $(window).width();
 var clientHeight = $(window).height();
+var $loveHeart, offsetX, offsetY;
 
 $(function () {
     // setup garden
 	$loveHeart = $("#loveHeart");
-	var offsetX = $loveHeart.width() / 2;
-	var offsetY = $loveHeart.height() / 2 - 55;
     $garden = $("#garden");
     gardenCanvas = $garden[0];
-	gardenCanvas.width = $("#loveHeart").width();
-    gardenCanvas.height = $("#loveHeart").height()
     gardenCtx = gardenCanvas.getContext("2d");
     gardenCtx.globalCompositeOperation = "lighter";
     garden = new Garden(gardenCtx, gardenCanvas);
-	
-	$("#content").css("width", $loveHeart.width() + $("#code").width());
-	$("#content").css("height", Math.max($loveHeart.height(), $("#code").height()));
-	$("#content").css("margin-top", Math.max(($window.height() - $("#content").height()) / 2, 10));
-	$("#content").css("margin-left", Math.max(($window.width() - $("#content").width()) / 2, 10));
 
     // renderLoop
     setInterval(function () {
         garden.render();
     }, Garden.options.growSpeed);
+
+    // switch from the poem view to the heart view when the heart is clicked
+    $("#heartLink").click(function (e) {
+        e.preventDefault();
+        $("#codeView").addClass("hidden");
+        $("#heartView").addClass("active");
+
+        offsetX = $loveHeart.width() / 2;
+        offsetY = $loveHeart.height() / 2 - 55;
+        gardenCanvas.width = $loveHeart.width();
+        gardenCanvas.height = $loveHeart.height();
+
+        startHeartAnimation();
+    });
 });
 
 $(window).resize(function() {
@@ -86,7 +92,7 @@ function startHeartAnimation() {
 				if (progress >= str.length) {
 					clearInterval(timer);
 				}
-			}, 75);
+			}, 1);
 		});
 		return this;
 	};
@@ -131,10 +137,6 @@ function adjustWordsPosition() {
 	$('#words').css("position", "absolute");
 	$('#words').css("top", $("#garden").position().top + 195);
 	$('#words').css("left", $("#garden").position().left + 70);
-}
-
-function adjustCodePosition() {
-	$('#code').css("margin-top", ($("#garden").height() - $("#code").height()) / 2);
 }
 
 function showLoveU() {
